@@ -20,7 +20,7 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Override
 	public void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder());
-	}
+	} 
 
 	@Override
 	public void configure(WebSecurity web) throws Exception {
@@ -29,9 +29,21 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.csrf().disable().authorizeRequests().antMatchers(HttpMethod.POST, "/api/authentication/loginPanel")
-				.permitAll().antMatchers(HttpMethod.POST, "/api/authentication/loginMobile").permitAll().anyRequest()
-				.authenticated().and().httpBasic();
+		http
+			.csrf()
+			.disable()
+			.authorizeRequests()
+			.antMatchers(HttpMethod.POST, "/api/authentication/loginPanel").permitAll()
+			.antMatchers(HttpMethod.POST, "/api/authentication/loginMobile").permitAll()
+			.antMatchers(HttpMethod.POST, "/api/authentication/validateToken").permitAll()
+			.antMatchers(HttpMethod.POST, "/api/authentication/resetPassword").permitAll()
+			.antMatchers(HttpMethod.POST, "/api/authentication/rememberPassword").permitAll()
+			.antMatchers(HttpMethod.POST, "/api/permission").permitAll()
+			//.antMatchers(HttpMethod.DELETE, "/api/permission/{id}").permitAll()
+			.anyRequest()
+			.authenticated()
+		.and()
+			.httpBasic();
 		// .addFilterBefore(customFilter(), BasicAuthenticationFilter.class)
 	}
 
