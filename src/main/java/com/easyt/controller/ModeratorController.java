@@ -17,34 +17,42 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.easyt.constant.Api;
+import com.easyt.constant.ApiMapping;
 import com.easyt.constant.MessagesErroEnum;
 import com.easyt.exception.ApplicationException;
+import com.easyt.exception.UnauthorizedException;
 import com.easyt.request.UserRequest;
 import com.easyt.response.Response;
 import com.easyt.response.UserResponse;
+import com.easyt.service.AuthenticationService;
 import com.easyt.service.ModeratorService;
 import com.easyt.service.SendMailService;
 import com.easyt.util.SendMail;
 
 @RestController
-@RequestMapping(Api.API + Api.MODERATOR)
-@CrossOrigin(origins = Api.CROSS_ORIGEN)
+@RequestMapping(ApiMapping.MODERATOR)
+@CrossOrigin(origins = ApiMapping.CROSS_ORIGEN)
 public class ModeratorController {
 	
 	@Autowired
 	private ModeratorService moderatorService;
 	@Autowired
 	private SendMailService sendMailService;
+	@Autowired
+	private AuthenticationService authenticationService;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ModeratorController.class);
+	private static final String AUTHENTICATION_PROPERTY = "Authentication";
 	
+	@SuppressWarnings("deprecation")
 	@PostMapping(value = "")
-	public ResponseEntity<Response<String>> createModerator(@Valid @RequestBody UserRequest moderator) throws ApplicationException {
+	public ResponseEntity<Response<String>> createModerator(@Valid @RequestBody UserRequest moderator, @RequestHeader(AUTHENTICATION_PROPERTY) String authentication) throws ApplicationException, UnauthorizedException {
 		Response<String> res = new Response<String>();
 		try {
+			authenticationService.verifyUserAuthenticated(authentication);
 			SendMail dest = moderatorService.createModerator(moderator);
 			if (dest != null) {
 				CompletableFuture.runAsync(new Runnable() {
@@ -61,9 +69,12 @@ public class ModeratorController {
 			}
 			res.setData(MessagesErroEnum.CREATE_MODERATOR_SUCCESS.getMessage());
 			return ResponseEntity.ok(res);
+		} catch (UnauthorizedException e) {
+			res.setError(e.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
 		} catch (ApplicationException e) {
 			res.setError(e.getMessage());
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+			return ResponseEntity.status(HttpStatus.METHOD_FAILURE).body(res);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			res.setError(MessagesErroEnum.ERRO_SOLICITATION.getMessage());
@@ -71,16 +82,21 @@ public class ModeratorController {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	@GetMapping(value = "")
-	public ResponseEntity<Response<List<UserResponse>>> listAllModerator() throws ApplicationException {
+	public ResponseEntity<Response<List<UserResponse>>> listAllModerator(@RequestHeader(AUTHENTICATION_PROPERTY) String authentication) throws ApplicationException, UnauthorizedException {
 		Response<List<UserResponse>> res = new Response<List<UserResponse>>();
 		try {
+			authenticationService.verifyUserAuthenticated(authentication);
 			List<UserResponse> moderators = moderatorService.listAllModerator();
 			res.setData(moderators);
 			return ResponseEntity.ok(res);
+		} catch (UnauthorizedException e) {
+			res.setError(e.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
 		} catch (ApplicationException e) {
 			res.setError(e.getMessage());
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+			return ResponseEntity.status(HttpStatus.METHOD_FAILURE).body(res);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			res.setError(MessagesErroEnum.ERRO_SOLICITATION.getMessage());
@@ -88,16 +104,21 @@ public class ModeratorController {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	@PatchMapping(value = "/{id}")
-	public ResponseEntity<Response<String>> updateModerator(@PathVariable("id") Long id, @Valid @RequestBody UserRequest moderator) throws ApplicationException {
+	public ResponseEntity<Response<String>> updateModerator(@PathVariable("id") Long id, @Valid @RequestBody UserRequest moderator, @RequestHeader(AUTHENTICATION_PROPERTY) String authentication) throws ApplicationException, UnauthorizedException {
 		Response<String> res = new Response<String>();
 		try {
+			authenticationService.verifyUserAuthenticated(authentication);
 			moderatorService.updateModerator(id, moderator);
 			res.setData(MessagesErroEnum.UPDATE_MODERATOR_SUCCESS.getMessage());
 			return ResponseEntity.ok(res);
+		} catch (UnauthorizedException e) {
+			res.setError(e.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
 		} catch (ApplicationException e) {
 			res.setError(e.getMessage());
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+			return ResponseEntity.status(HttpStatus.METHOD_FAILURE).body(res);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			res.setError(MessagesErroEnum.ERRO_SOLICITATION.getMessage());
@@ -105,16 +126,21 @@ public class ModeratorController {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Response<String>> deleteModerator(@PathVariable("id") Long id) throws ApplicationException {
+	public ResponseEntity<Response<String>> deleteModerator(@PathVariable("id") Long id, @RequestHeader(AUTHENTICATION_PROPERTY) String authentication) throws ApplicationException, UnauthorizedException {
 		Response<String> res = new Response<String>();
 		try {
+			authenticationService.verifyUserAuthenticated(authentication);
 			moderatorService.deleteModerator(id);
 			res.setData(MessagesErroEnum.DELETE_MODERATOR_SUCCESS.getMessage());
 			return ResponseEntity.ok(res);
+		} catch (UnauthorizedException e) {
+			res.setError(e.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
 		} catch (ApplicationException e) {
 			res.setError(e.getMessage());
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+			return ResponseEntity.status(HttpStatus.METHOD_FAILURE).body(res);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			res.setError(MessagesErroEnum.ERRO_SOLICITATION.getMessage());

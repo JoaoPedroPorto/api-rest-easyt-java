@@ -76,7 +76,7 @@ public class EmailUtil {
 		try {
 			MimeMessage message = new MimeMessage(session);
 			try {
-				message.setFrom(new InternetAddress(this.username, "easyt", "UTF-8"));
+				message.setFrom(new InternetAddress(this.username, "EasyT", "UTF-8"));
 			} catch (UnsupportedEncodingException e) {
 				LOGGER.error(e.getMessage(), e);
 			}

@@ -12,40 +12,50 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.easyt.constant.Api;
+import com.easyt.constant.ApiMapping;
 import com.easyt.constant.MessagesErroEnum;
 import com.easyt.entity.Device;
 import com.easyt.entity.User;
 import com.easyt.exception.ApplicationException;
+import com.easyt.exception.UnauthorizedException;
 import com.easyt.request.DeviceRequest;
 import com.easyt.request.UserRequest;
 import com.easyt.response.Response;
 import com.easyt.response.UserResponse;
+import com.easyt.service.AuthenticationService;
 import com.easyt.service.UserService;
 
 @RestController
-@RequestMapping(Api.API + Api.USER)
-@CrossOrigin(origins = Api.CROSS_ORIGEN)
+@RequestMapping(ApiMapping.USER)
+@CrossOrigin(origins = ApiMapping.CROSS_ORIGEN)
 public class UserController {
 	
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private AuthenticationService authenticationService;
 	private static final Logger LOGGER = LoggerFactory.getLogger(PermissionController.class);
+	private static final String AUTHENTICATION_PROPERTY = "Authentication";
 	
+	@SuppressWarnings("deprecation")
 	@PatchMapping(value = "/myData/{id}")
-	public ResponseEntity<Response<String>> myData(	@PathVariable("id") Long id, 
-													@Valid @RequestBody UserRequest user) throws ApplicationException {
+	public ResponseEntity<Response<String>> myData(@PathVariable("id") Long id, @Valid @RequestBody UserRequest user, @RequestHeader(AUTHENTICATION_PROPERTY) String authentication) throws ApplicationException, UnauthorizedException {
 		Response<String> res = new Response<String>();
 		try {
+			authenticationService.verifyUserAuthenticated(authentication);
 			this.userService.updateMyData(id, user);
 			res.setData(MessagesErroEnum.UPDATE_DATA_USER_SUCCESS.getMessage());
 			return ResponseEntity.ok(res);
+		} catch (UnauthorizedException e) {
+			res.setError(e.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
 		} catch (ApplicationException e) {
 			res.setError(e.getMessage());
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+			return ResponseEntity.status(HttpStatus.METHOD_FAILURE).body(res);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			res.setError(MessagesErroEnum.ERRO_SOLICITATION.getMessage());
@@ -53,17 +63,21 @@ public class UserController {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	@PatchMapping(value = "/changePassword/{id}")
-	public ResponseEntity<Response<String>> changePassword(	@PathVariable("id") Long id, 
-															@Valid @RequestBody UserRequest user) throws ApplicationException {
+	public ResponseEntity<Response<String>> changePassword(@PathVariable("id") Long id, @Valid @RequestBody UserRequest user, @RequestHeader(AUTHENTICATION_PROPERTY) String authentication) throws ApplicationException, UnauthorizedException {
 		Response<String> res = new Response<String>();
 		try {
+			authenticationService.verifyUserAuthenticated(authentication);
 			this.userService.changePassword(id, user);
 			res.setData(MessagesErroEnum.CHANGE_PASSWORD_SUCCESS.getMessage());
 			return ResponseEntity.ok(res);
+		} catch (UnauthorizedException e) {
+			res.setError(e.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
 		} catch (ApplicationException e) {
 			res.setError(e.getMessage());
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+			return ResponseEntity.status(HttpStatus.METHOD_FAILURE).body(res);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			res.setError(MessagesErroEnum.ERRO_SOLICITATION.getMessage());
@@ -71,16 +85,21 @@ public class UserController {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	@GetMapping(value = "/getUser/{id}")
-	public ResponseEntity<Response<UserResponse>> getUserById(@PathVariable("id") Long id) throws ApplicationException {
+	public ResponseEntity<Response<UserResponse>> getUserById(@PathVariable("id") Long id, @RequestHeader(AUTHENTICATION_PROPERTY) String authentication) throws ApplicationException, UnauthorizedException {
 		Response<UserResponse> res = new Response<UserResponse>();
 		try {
+			authenticationService.verifyUserAuthenticated(authentication);
 			UserResponse userDB = this.userService.getUserById(id);
 			res.setData(userDB);
 			return ResponseEntity.ok(res);
+		} catch (UnauthorizedException e) {
+			res.setError(e.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
 		} catch (ApplicationException e) {
 			res.setError(e.getMessage());
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+			return ResponseEntity.status(HttpStatus.METHOD_FAILURE).body(res);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			res.setError(MessagesErroEnum.ERRO_SOLICITATION.getMessage());
@@ -88,10 +107,12 @@ public class UserController {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	@PatchMapping(value = "/updateDevice")
-	public ResponseEntity<Response<String>> updateDeviceUser(DeviceRequest device) throws ApplicationException {
+	public ResponseEntity<Response<String>> updateDeviceUser(@Valid @RequestBody DeviceRequest device, @RequestHeader(AUTHENTICATION_PROPERTY) String authentication) throws ApplicationException, UnauthorizedException {
 		Response<String> res = new Response<String>();
 		try {
+			authenticationService.verifyUserAuthenticated(authentication);
 			if ((device.getId() == null) || (device.getPlatform() == null) ||
 					((device.getNewToken() == null || device.getNewToken().trim().isEmpty()) && 
 							(device.getOldToken() == null || device.getOldToken().trim().isEmpty())))
@@ -114,9 +135,12 @@ public class UserController {
 			this.userService.updateDeviceUser(d0, d1);
 			res.setData(MessagesErroEnum.UPDATE_DEVICE_SUCCESS.getMessage());
 			return ResponseEntity.ok(res);
+		} catch (UnauthorizedException e) {
+			res.setError(e.getMessage());
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(res);
 		} catch (ApplicationException e) {
 			res.setError(e.getMessage());
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+			return ResponseEntity.status(HttpStatus.METHOD_FAILURE).body(res);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			res.setError(MessagesErroEnum.ERRO_SOLICITATION.getMessage());

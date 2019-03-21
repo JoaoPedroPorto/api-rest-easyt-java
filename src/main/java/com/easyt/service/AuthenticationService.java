@@ -1,6 +1,7 @@
 package com.easyt.service;
 
 import com.easyt.exception.ApplicationException;
+import com.easyt.exception.UnauthorizedException;
 import com.easyt.request.LoginRequest;
 import com.easyt.response.UserResponse;
 import com.easyt.util.SendMail;
@@ -19,6 +20,6 @@ public interface AuthenticationService {
 
 	String refreshToken(String token) throws ApplicationException;
 
-	Boolean verifyUserAuthenticated(String token);
+	void verifyUserAuthenticated(String token) throws UnauthorizedException;
 
 }

@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import com.easyt.converter.ConverterHelper;
 import com.easyt.entity.Token;
 import com.easyt.entity.User;
 import com.easyt.exception.ApplicationException;
+import com.easyt.exception.UnauthorizedException;
 import com.easyt.repository.TokenRepository;
 import com.easyt.repository.UserRepository;
 import com.easyt.request.LoginRequest;
@@ -37,7 +39,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	private TokenRepository tokenRepository;
 	
 	@Override
-	public Boolean verifyUserAuthenticated(String token) {
+	public void verifyUserAuthenticated(String token) throws UnauthorizedException {
+		if (token == null || token.trim().isEmpty())
+			throw new UnauthorizedException(HttpStatus.UNAUTHORIZED.name());
 		Optional<Token> tokenDB = tokenRepository
 				.findOneByUser_StatusNotAndDateOfExpirationAfterDateNowAndValueAndTypeOrType(	token,
 																								VerificationTokenType.REFRESH_SESSION.getName(),
@@ -45,8 +49,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 																								StatusEnum.INACTIVE.getDesc(),
 																								new Date());
 		if (tokenDB == null || !tokenDB.isPresent())
-			return false;
-		return true;
+			throw new UnauthorizedException(HttpStatus.UNAUTHORIZED.name());
 	}
 	
 	@Override

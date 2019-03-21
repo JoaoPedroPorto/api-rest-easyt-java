@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.easyt.constant.Api;
+import com.easyt.constant.ApiMapping;
 import com.easyt.constant.MessagesErroEnum;
 import com.easyt.exception.ApplicationException;
 import com.easyt.request.LoginRequest;
@@ -28,8 +28,8 @@ import com.easyt.service.SendMailService;
 import com.easyt.util.SendMail;
 
 @RestController
-@RequestMapping(Api.API + Api.AUTHENTICATION)
-@CrossOrigin(origins = Api.CROSS_ORIGEN)
+@RequestMapping(ApiMapping.AUTHENTICATION)
+@CrossOrigin(origins = ApiMapping.CROSS_ORIGEN)
 public class AuthenticationController {
 	
 	@Autowired
@@ -40,6 +40,7 @@ public class AuthenticationController {
 	private SendMailService sendMailService;
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationController.class);
 	
+	@SuppressWarnings("deprecation")
 	@PostMapping(value = "/refreshToken")
 	public ResponseEntity<Response<String>> refreshToken(@Valid @RequestBody UserRequest request) throws ApplicationException {
 		Response<String> res = new Response<String>();
@@ -49,7 +50,7 @@ public class AuthenticationController {
 			return ResponseEntity.ok(res);
 		} catch (ApplicationException e) {
 			res.setError(e.getMessage());
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+			return ResponseEntity.status(HttpStatus.METHOD_FAILURE).body(res);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			res.setError(MessagesErroEnum.ERRO_SOLICITATION.getMessage());
@@ -57,6 +58,7 @@ public class AuthenticationController {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	@PostMapping(value = "/loginPanel")
 	public ResponseEntity<Response<UserResponse>> loginPanel(@Valid @RequestBody LoginRequest user) throws ApplicationException {
 		Response<UserResponse> res = new Response<UserResponse>();
@@ -71,7 +73,7 @@ public class AuthenticationController {
 			return ResponseEntity.ok(res);
 		} catch (ApplicationException e) {
 			res.setError(e.getMessage());
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+			return ResponseEntity.status(HttpStatus.METHOD_FAILURE).body(res);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			res.setError(MessagesErroEnum.ERRO_SOLICITATION.getMessage());
@@ -79,6 +81,7 @@ public class AuthenticationController {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	@PostMapping(value = "/loginMobile")
 	public ResponseEntity<Response<UserResponse>> loginMobile(@Valid @RequestBody LoginRequest user) throws ApplicationException {
 		Response<UserResponse> res = new Response<UserResponse>();
@@ -93,7 +96,7 @@ public class AuthenticationController {
 			return ResponseEntity.ok(res);
 		} catch (ApplicationException e) {
 			res.setError(e.getMessage());
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+			return ResponseEntity.status(HttpStatus.METHOD_FAILURE).body(res);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			res.setError(MessagesErroEnum.ERRO_SOLICITATION.getMessage());
@@ -101,6 +104,7 @@ public class AuthenticationController {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	@PostMapping(value = "/validateToken")
 	public ResponseEntity<Response<String>> validateToken(@Valid @RequestBody UserRequest request) throws ApplicationException {
 		Response<String> res = new Response<String>();
@@ -110,7 +114,7 @@ public class AuthenticationController {
 			return ResponseEntity.ok(res);
 		} catch (ApplicationException e) {
 			res.setError(e.getMessage());
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+			return ResponseEntity.status(HttpStatus.METHOD_FAILURE).body(res);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			res.setError(MessagesErroEnum.ERRO_SOLICITATION.getMessage());
@@ -118,6 +122,7 @@ public class AuthenticationController {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@PostMapping(value = "/resetPassword")
 	public ResponseEntity<Response<String>> resetPassword(@Valid @RequestBody UserRequest request) throws ApplicationException {
 		Response<String> res = new Response<String>();
@@ -127,7 +132,7 @@ public class AuthenticationController {
 			return ResponseEntity.ok(res);
 		} catch (ApplicationException e) {
 			res.setError(e.getMessage());
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+			return ResponseEntity.status(HttpStatus.METHOD_FAILURE).body(res);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			res.setError(MessagesErroEnum.ERRO_SOLICITATION.getMessage());
@@ -135,6 +140,7 @@ public class AuthenticationController {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	@PostMapping(value = "/rememberPassword")
 	public ResponseEntity<Response<String>> rememberPassword(@Valid @RequestBody UserRequest request) throws ApplicationException {
 		Response<String> res = new Response<String>();
@@ -158,7 +164,7 @@ public class AuthenticationController {
 			return ResponseEntity.ok(res);
 		} catch (ApplicationException e) {
 			res.setError(e.getMessage());
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+			return ResponseEntity.status(HttpStatus.METHOD_FAILURE).body(res);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			res.setError(MessagesErroEnum.ERRO_SOLICITATION.getMessage());

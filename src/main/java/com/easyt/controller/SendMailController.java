@@ -11,21 +11,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.easyt.constant.Api;
+import com.easyt.constant.ApiMapping;
 import com.easyt.constant.MessagesErroEnum;
 import com.easyt.exception.ApplicationException;
 import com.easyt.response.Response;
 import com.easyt.service.SendMailService;
 
 @RestController
-@RequestMapping(Api.API + Api.SEND_MAIL)
-@CrossOrigin(origins = Api.CROSS_ORIGEN)
+@RequestMapping(ApiMapping.SEND_MAIL)
+@CrossOrigin(origins = ApiMapping.CROSS_ORIGEN)
 public class SendMailController {
 	
 	@Autowired
 	private SendMailService sendMailService;
 	private static final Logger LOGGER = LoggerFactory.getLogger(SendMailController.class);
 	
+	@SuppressWarnings("deprecation")
 	@GetMapping(value = "")
 	public ResponseEntity<Response<String>> testSendMail(	@PathVariable("parameter")String parameter,
 															@PathVariable("email")String email) throws ApplicationException {
@@ -36,7 +37,7 @@ public class SendMailController {
 			return ResponseEntity.ok(res);
 		} catch (ApplicationException e) {
 			res.setError(e.getMessage());
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+			return ResponseEntity.status(HttpStatus.METHOD_FAILURE).body(res);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			res.setError(MessagesErroEnum.ERRO_SOLICITATION.getMessage());

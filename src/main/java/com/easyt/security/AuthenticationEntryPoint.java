@@ -1,19 +1,9 @@
 package com.easyt.security;
 
-import java.io.IOException;
+/*@Component("authenticationEntryPoint")*/
+public class AuthenticationEntryPoint /*extends BasicAuthenticationEntryPoint*/ {
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
-import org.springframework.stereotype.Component;
-
-@Component("authenticationEntryPoint")
-public class AuthenticationEntryPoint extends BasicAuthenticationEntryPoint {
-
-	@Override
+	/*@Override
 	public void commence(HttpServletRequest req, HttpServletResponse res, AuthenticationException authEx)
 			throws IOException, ServletException {
 		res.sendError(HttpServletResponse.SC_UNAUTHORIZED,
@@ -24,6 +14,6 @@ public class AuthenticationEntryPoint extends BasicAuthenticationEntryPoint {
 	public void afterPropertiesSet() throws Exception {
 		setRealmName("easyt");
 		super.afterPropertiesSet();
-	}
+	}*/
 
 }

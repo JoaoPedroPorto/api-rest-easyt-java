@@ -14,6 +14,7 @@ import com.easyt.repository.ApplicationRepository;
 
 @Repository
 public class ImplementsUserDetailsService implements UserDetailsService {
+	
 	@Autowired
 	private ApplicationRepository applicationRepository;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ImplementsUserDetailsService.class);
